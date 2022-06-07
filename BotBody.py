@@ -136,7 +136,9 @@ class ChatBot():
         #Rule使用正则表达式作为判断手段
         #Rule对象使用自动调用方法__call__
         def __init__(self):
-            with open(".\Test.json", "w+", encoding='utf8') as RuleFile:
+            if os.path.exists("./jsons") == False:
+                os.mkdir("./jsons")
+            with open("./jsons/Rule.json", "w+", encoding='utf8') as RuleFile:
                 #self.Rules = json.load(RuleFile)#包含一大组的Rule对应关系，全部读出来，待选，然后根据标号来放入正则式子进行匹配
                 self.Rules = {
                     "BotName":{"Target":"name","tokens":["what ","What ","Can you ","can you "," your "," you "],"times":0,"Response":["My name is Liqing","I am Liqing!!!"]},
