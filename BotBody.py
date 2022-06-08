@@ -17,19 +17,16 @@ def get_result(input):
         print(rsp.status_code)
     return rsp_data
 class ChatBot():
-    def __init__(self):
+    def __init__(self,IntroductionPath,SamplePath):
         self.SPEAKER1 = " Jack:"
         self.SPEAKER2 = " Tom:"
-        self.introduction = {
-            "love_releationship":"This is a short conversation about a relationship between a human and a robot called xiaodu.Jack is a programmer who works overtime for a long time and has a lot of work pressure.His girlfriend Lucy is a civil servant who works within the system and has a lot of time.Jack's job is complicated, and the long-term competitive pressure in the company makes him drink a lot every time he comes home.Lucy spends a lot of time without a job, but has to raise their child mike, so much time spent with the child has left her suffering from depression.\n",
-            "family_conflict_issues":"This is a short conversation chat between a human and a robot about family conflict issues. The robot's name is Sabrina Zhuang. The robot is an expert in dealing with family emotional issues and was created by Team Cao in September 2021. The team Cao consists of ten students from Huazhong University of Science and Technology. The Robot is very gentle, empathetic, humorous and considerate. The robot's job is to comfort human emotions and give humans an effective suggestion.",
-            "workplace distress":"This is a short conversation chat between a human and a robot about workplace distress issues. The robot's name is Doinb. The robot is an expert in dealing with various workplace distress issues and was created by Team Cao in September 2021. The human has encountered some troubles at work recently, and his mood is a little lost. Doinb needs to help him analyze the situation, comfort his emotions and give him an effective suggestion.",
-            "casual_talking":"This is a conversion happened between 2 boys.Both of them are studying at the same school."
-        }
-        self.Sample = {
+        with open(IntroductionPath, "r", encoding='utf8') as introductionFile:
+            self.introduction = introductionFile
+        with open(SamplePath, "r", encoding='utf8') as SamplePath:
+            self.Sample = {
             "none":"",
             "love_releationship":self.SPEAKER1 + "What's your name?\n"+self.SPEAKER2 + "My name is Sabrina Zhuang, and you can call me Zhuang.\n\n"+self.SPEAKER1 + "How old are you?\n"+ self.SPEAKER2  + "I was created by Team Cao of Huazhong University of Science and Technology(HUST) in September 2021.\n\n"+self.SPEAKER1 + "So where do you work?\n"+self.SPEAKER2 + "I am a robot major in dealing with family emotional issues and was created by Team Cao of HUST in Wuhan.\n\n"+self.SPEAKER1 + " Do you have colleagues?\n"+self.SPEAKER2 + "Our team has ten members in total, all of whom are students from HUST.\n\n"+self.SPEAKER1 + "Where is your hometown? Which cuisine do you like?\n"+self.SPEAKER2 + "Usually, robots don't need to eat anything. Because I was born in Wuhan, my favorite food is of course Hubei cuisine.\n\n"
-        }
+        }#这里有个SPEAKER变更的问题，尚未修复
         self.Chatinfo = {"prompt":None,
             "max_len":30,
             "do_sample":True,
@@ -142,7 +139,8 @@ class ChatBot():
                 #self.Rules = json.load(RuleFile)#包含一大组的Rule对应关系，全部读出来，待选，然后根据标号来放入正则式子进行匹配
                 self.Rules = {
                     "BotName":{"Target":"name","tokens":["what ","What ","Can you ","can you "," your "," you "],"times":0,"Response":["My name is Liqing","I am Liqing!!!"]},
-                    "Time":{"Target":"time","tokens":["today", "do you ","Do you ","What ","What","what ","time is it "],"times":0,"Response":["Now time is:"+(time.strftime("%Y-%m-%d %H:%M",time.localtime())),"Sorry,I don't know!"]}
+                    "Time":{"Target":"time","tokens":["today", "do you ","Do you ","What ","What","what ","time is it "],"times":0,"Response":["Now time is:"+(time.strftime("%Y-%m-%d %H:%M",time.localtime())),"Sorry,I don't know!"]},
+                    "Hobby":{"Target":"hobbies","tokens":["What ","what ","your","you","have","Do you","do you"],"times":0,"Response":["I love playing football!!!","My hobby is playing computer games!:)"]}
                             }
             RuleFile.close
             #print("Rule Start calling...")
@@ -164,7 +162,3 @@ class ChatBot():
         a = 5
     class Personality():
         a = 1
-bot = ChatBot()
-bot.InfoToJson()
-bot.SampleToJson()
-bot.Chat()
