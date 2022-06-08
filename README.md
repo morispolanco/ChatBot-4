@@ -3,8 +3,6 @@ GPT-j ChatBOT for casuallyChatting
 
 *---Created by DianGroup/digitial-Man*
 
-![image-20220609000010778](C:\Users\Trace\AppData\Roaming\Typora\typora-user-images\image-20220609000010778.png)
-
 ## Main Structure
 
 ### Generator->Rule->Modules->Personality->Response
