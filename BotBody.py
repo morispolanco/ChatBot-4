@@ -6,6 +6,8 @@ import os
 import re
 import random
 import time
+import pynvml
+import logging
 def get_result(input):
     url = 'http://127.0.0.1:8080/api/v0/generate'
     req_data = input
@@ -18,6 +20,7 @@ def get_result(input):
     return rsp_data
 class ChatBot():
     def __init__(self):
+        self.username = "Trace"
         self.SPEAKER1 = " Jack:"
         self.SPEAKER2 = " Tom:"
         self.introduction = {
@@ -51,6 +54,53 @@ class ChatBot():
             "no_repeat_ngram_size":1
         }
         self.FSBinfo = {}
+        self.LogFileCreate(self.username)
+        self.SystemLogger = logging.getLogger("System")
+        self.logLogger = logging.getLogger("Log")
+        self.ChattingLogger = logging.getLogger("Chatting")
+        self.LoggerEdit()
+    def LogFileCreate(self,username):
+        if not os.path.exists("./logs"):
+            os.mkdir("./logs")
+        if not os.path.exists(f"./logs/{username}"):
+            os.mkdir(f"./logs/{username}")
+        #创建相应文件夹
+        TimeForFile = time.strftime("%Y-%m-%d", time.localtime())
+        if not os.path.exists(f"./logs/{username}/"+TimeForFile):
+            os.mkdir(f"./logs/{username}/"+TimeForFile)
+            ErrorFile = open(f"./logs/{username}/"+TimeForFile+"/error.log", "w+", encoding='utf8')
+            ErrorFile.close()
+            LogFile = open(f"./logs/{username}/"+TimeForFile+"/Chatting.log", "w+", encoding='utf8')
+            LogFile.close()
+            SystemFile = open(f"./logs/{username}/"+TimeForFile+"/System.log", "w+", encoding='utf8')
+            SystemFile.close()
+        return 1
+    def LoggerEdit(self):
+        SystemFileHandler = logging.FileHandler(f"./logs/{user}/"+TimeForFile+"/System.log")
+        LogFileHandler = logging.FileHandler(f"./logs/{user}/"+TimeForFile+"/Chatting.log")
+        ErrorFileHandler = logging.FileHandler(f"./logs/{user}/"+TimeForFile+"/error.log")
+        SystemFileHandler.setLevel(logging.INFO)
+        LogFileHandler.setLevel(logging.DEBUG)
+        ErrorFileHandler.setLevel(logging.ERROR)
+        LogFormatter = logging.Formatter('[%(asctime)s] - thread_id:%(thread)d - process_id:%(process)d - %(levelname)s: %(message)s')
+        ErrorFormatter = logging.Formatter('[%(asctime)s] - thread_id:%(thread)d - process_id:%(process)d - %(levelname)s: %(message)s')
+        LogFileHandler.setFormatter(LogFormatter)
+        ErrorFileHandler.setFormatter(ErrorFormatter)
+        self.ChattingLogger.addHandler(LogFileHandler)#仅用一个即可
+        self.SystemLogger.addHandler(SystemFileHandler)#仅用一个即可
+        self.logLogger.addHandler(ErrorFileHandler)
+        self.logLogger.addHandler(LogFileHandler)#添加Error、Log两个Handler
+        return
+    
+    def GPUinfoGet(self):
+        pynvml.nvmlInit()
+        #将信息获取后打包返回
+        GPUinfo = {}
+        GPUinfo['GPUnum'] = pynvml.nvmlDeviceGetCount()
+        for i in GPUinfo['GPUnum']:
+            GPUinfo[f'num{i}'] = pynvml.nvmlDeviceGetHandleByIndex(i)
+        
+
     def get_result(self,input):
         url = 'http://127.0.0.1:8080/api/v0/generate'
         req_data = input
